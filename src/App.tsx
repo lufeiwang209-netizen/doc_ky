@@ -90,6 +90,7 @@ export default function App() {
     title: '主治医师',
     hospitalLevel: '二级医院'
   });
+  const [apiKey, setApiKey] = useState<string>(localStorage.getItem('aihubmixApiKey') || '');
   const [topics, setTopics] = useState<TopicSuggestion[]>([]);
   const [selectedTopic, setSelectedTopic] = useState<string>('');
   const [formData, setFormData] = useState({
@@ -109,14 +110,32 @@ export default function App() {
     { id: '2', title: '高血压病例回顾摘要', date: '2026-03-17', status: 'abstract' }
   ]);
 
+  useEffect(() => {
+    geminiService.setApiKey(apiKey);
+    // 当 apiKey 改变时，更新 localStorage
+    if (apiKey) {
+      localStorage.setItem('aihubmixApiKey', apiKey);
+    } else {
+      localStorage.removeItem('aihubmixApiKey');
+    }
+  }, [apiKey]);
+
   // --- Handlers ---
   const handleLogin = () => {
+    if (!apiKey) {
+      alert('请先填写 AiHubMix API Key！');
+      return;
+    }
     setLoading(true);
     setLoadingMsg('正在验证身份...');
     setTimeout(() => {
       setLoading(false);
       setStep('profile');
     }, 1500);
+  };
+
+  const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setApiKey(e.target.value);
   };
 
   const handleSaveProfile = () => {
@@ -194,6 +213,17 @@ export default function App() {
                 </div>
                 <h1 className="text-3xl font-bold glow-text">医研通</h1>
                 <p className="text-slate-400">临床医生职称科研助手</p>
+              
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest text-slate-500 font-mono">AiHubMix API Key</label>
+                <input 
+                  type="password" 
+                  placeholder="请输入您的 AiHubMix API Key" 
+                  value={apiKey}
+                  onChange={handleApiKeyChange}
+                  className="w-full bg-slate-800/50 border border-white/5 rounded-xl p-4 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                />
+              </div>
               </div>
               
               <div className="space-y-4">
@@ -220,7 +250,7 @@ export default function App() {
                   onClick={handleLogin}
                   className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center justify-center group"
                 >
-                  立即登录
+                  立即登录 / 保存 API Key
                   <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>

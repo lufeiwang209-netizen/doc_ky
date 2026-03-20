@@ -2,18 +2,7 @@ import { createAihubmix } from '@aihubmix/ai-sdk-provider';
 import { generateText, generateObject, streamText, streamObject } from 'ai';
 import { z } from 'zod';
 
-const VITE_AIHUBMIX_API_KEY = import.meta.env.VITE_AIHUBMIX_API_KEY || "sk-5RNFV7LA0uv8CZ90C100Ce867c7b4992B18167F1E582D89e";
 let aihubmixClient: ReturnType<typeof createAihubmix> | null = null;
-
-if (VITE_AIHUBMIX_API_KEY) {
-  aihubmixClient = createAihubmix({
-    apiKey: VITE_AIHUBMIX_API_KEY,
-    // baseURL: "https://aihubmix.com/v1/", // Optional, if aihubmix default base url is not working
-  });
-} else {
-  console.warn("AIHUBMIX_API_KEY is not set. AIHubMix API features will be disabled.");
-}
-
 
 export interface UserProfile {
   department: string;
@@ -28,6 +17,17 @@ export interface TopicSuggestion {
 }
 
 export const geminiService = {
+  setApiKey(apiKey: string) {
+    if (apiKey) {
+      aihubmixClient = createAihubmix({
+        apiKey: apiKey,
+        // baseURL: "https://aihubmix.com/v1/",
+      });
+    } else {
+      aihubmixClient = null;
+      console.warn("AIHUBMIX_API_KEY is not set. AIHubMix API features will be disabled.");
+    }
+  },
   async suggestTopics(profile: UserProfile): Promise<TopicSuggestion[]> {
     if (!aihubmixClient) {
       console.error("AIHubMix API is not initialized due to missing API key. Cannot suggest topics.");
