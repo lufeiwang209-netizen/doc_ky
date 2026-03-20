@@ -19,7 +19,8 @@ export interface TopicSuggestion {
 export const geminiService = {
   setApiKey(apiKey: string) {
     if (apiKey) {
-      aihubmixClient = createAihubmix({
+        console.log("Attempting to set AiHubMix API Key:", apiKey ? "(key provided)" : "(key missing)");
+        aihubmixClient = createAihubmix({
           apiKey: apiKey,
           baseURL: "https://aihubmix.com",
         } as any);
