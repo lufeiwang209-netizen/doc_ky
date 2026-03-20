@@ -127,7 +127,7 @@ export const geminiService = {
     3. 评估重复风险（低、中、高）。`;
 
     const { object } = await generateObject({
-      model: aihubmixClient('gpt-5.4'), // Using a generic AiHubMix model name
+      model: aihubmixClient('openai/gpt-4o-mini'), // Using a more generic OpenAI-compatible model name
       schema: z.object({
         risk: z.string(),
         suggestions: z.array(z.string()),
