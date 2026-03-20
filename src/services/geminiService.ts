@@ -52,7 +52,7 @@ export const geminiService = {
         topics: z.array(z.object({
           title: z.string(),
           reason: z.string(),
-          difficulty: z.enum(["低", "中", "高"]),
+          difficulty: z.enum(["低", "中", "高"])),
         })),
       }),
       prompt: prompt,
