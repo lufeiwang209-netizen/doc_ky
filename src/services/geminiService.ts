@@ -47,7 +47,7 @@ export const geminiService = {
     4. 给出选题理由和难度评估。`;
 
     const { object } = await generateObject({
-      model: aihubmixClient('gpt-5.4'), // Using a generic AiHubMix model name
+      model: aihubmixClient('openai/gpt-4o-mini'), // Using a more generic OpenAI-compatible model name
       schema: z.object({
         topics: z.array(z.object({
           title: z.string(),
@@ -77,7 +77,7 @@ export const geminiService = {
     3. 字数在300-500字左右。`;
 
     const { text } = await generateText({
-      model: aihubmixClient('gpt-5.4'), // Using a generic AiHubMix model name
+      model: aihubmixClient('openai/gpt-4o-mini'), // Using a more generic OpenAI-compatible model name
       prompt: prompt,
     });
 
@@ -104,7 +104,7 @@ export const geminiService = {
     4. 适当引用虚构但合理的参考文献（标注格式）。`;
 
     const { text } = await generateText({
-      model: aihubmixClient('gpt-5.4'), // Using a generic AiHubMix model name
+      model: aihubmixClient('openai/gpt-4o-mini'), // Using a more generic OpenAI-compatible model name
       prompt: prompt,
     });
 
