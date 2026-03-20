@@ -234,12 +234,6 @@ export default function App() {
                     placeholder="请输入手机号" 
                     className="w-full bg-slate-800/50 border border-white/5 rounded-xl p-4 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
                   />
-                   <label className="text-xs uppercase tracking-widest text-slate-500 font-mono">手机号</label>
-                  <input 
-                    type="text" 
-                    placeholder="请输入api key" 
-                    className="w-full bg-slate-800/50 border border-white/5 rounded-xl p-4 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                  />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs uppercase tracking-widest text-slate-500 font-mono">验证码</label>
