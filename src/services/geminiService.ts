@@ -47,12 +47,12 @@ export const geminiService = {
     4. 给出选题理由和难度评估。`;
 
     const { object } = await generateObject({
-      model: aihubmixClient('openai/gpt-4o-mini'), // Using a more generic OpenAI-compatible model name
+      model: aihubmixClient('gpt-4o-mini'),
       schema: z.object({
         topics: z.array(z.object({
           title: z.string(),
           reason: z.string(),
-          difficulty: z.enum(["低", "中", "高"])),
+          difficulty: z.enum(["低", "中", "高"]),
         })),
       }),
       prompt: prompt,
@@ -77,7 +77,7 @@ export const geminiService = {
     3. 字数在300-500字左右。`;
 
     const { text } = await generateText({
-      model: aihubmixClient('openai/gpt-4o-mini'), // Using a more generic OpenAI-compatible model name
+      model: aihubmixClient('gpt-4o-mini'),
       prompt: prompt,
     });
 
@@ -104,7 +104,7 @@ export const geminiService = {
     4. 适当引用虚构但合理的参考文献（标注格式）。`;
 
     const { text } = await generateText({
-      model: aihubmixClient('openai/gpt-4o-mini'), // Using a more generic OpenAI-compatible model name
+      model: aihubmixClient('gpt-4o-mini'),
       prompt: prompt,
     });
 
@@ -127,7 +127,7 @@ export const geminiService = {
     3. 评估重复风险（低、中、高）。`;
 
     const { object } = await generateObject({
-      model: aihubmixClient('openai/gpt-4o-mini'), // Using a more generic OpenAI-compatible model name
+      model: aihubmixClient('gpt-4o-mini'),
       schema: z.object({
         risk: z.string(),
         suggestions: z.array(z.string()),
