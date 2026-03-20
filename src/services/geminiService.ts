@@ -20,9 +20,9 @@ export const geminiService = {
   setApiKey(apiKey: string) {
     if (apiKey) {
       aihubmixClient = createAihubmix({
-        apiKey: apiKey,
-        // baseURL: "https://aihubmix.com/v1/",
-      });
+          apiKey: apiKey,
+          baseURL: "https://aihubmix.com",
+        } as any);
     } else {
       aihubmixClient = null;
       console.warn("AIHUBMIX_API_KEY is not set. AIHubMix API features will be disabled.");
