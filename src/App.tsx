@@ -118,7 +118,7 @@ export default function App() {
     const suggestions = await geminiService.suggestTopics(userProfile);
     if (suggestions.length === 0) {
       setLoading(false);
-      alert('暂未获取到选题，请检查服务端 AIHUBMIX_API_KEY 是否已配置。');
+      alert('暂未获取到选题，请稍后重试。');
       return;
     }
     setTopics(suggestions);
