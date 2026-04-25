@@ -2,19 +2,24 @@
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# Run and deploy your AI Studio app
+# Run locally
 
-This contains everything you need to run your app locally.
+## Prerequisites
 
-View your app in AI Studio: https://ai.studio/apps/185d99d0-98a0-4e5a-9948-0de270755dc1
+- Node.js 18+
 
-## Run Locally
-
-**Prerequisites:**  Node.js
-
+## Setup
 
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
+2. Create a `.env` file from `.env.example`.
+3. Set `AIHUBMIX_API_KEY` in `.env` (server-side only).
+4. For demo/testing without real key, set `MOCK_AI=true`.
+4. Start the app (frontend + API server):
    `npm run dev`
+
+## Security note
+
+- The API key is now read only by `server/index.ts`.
+- The browser never stores or displays the key.
+- If `MOCK_AI=true` (or key is missing), backend automatically returns mock content.

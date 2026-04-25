@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Stethoscope, 
@@ -14,9 +14,7 @@ import {
   ChevronRight, 
   Plus, 
   User, 
-  LogOut, 
   CheckCircle2, 
-  AlertCircle,
   ArrowLeft,
   Sparkles,
   ShieldCheck,
@@ -30,7 +28,7 @@ import { CoolLoading } from './components/CoolLoading';
 import { geminiService, UserProfile, TopicSuggestion } from './services/geminiService';
 
 // --- Types ---
-type Step = 'login' | 'profile' | 'dashboard' | 'topic-selection' | 'writing-form' | 'abstract-result' | 'full-text-result' | 'plagiarism-check';
+type Step = 'profile' | 'dashboard' | 'topic-selection' | 'writing-form' | 'abstract-result' | 'full-text-result' | 'plagiarism-check';
 
 interface Draft {
   id: string;
@@ -82,7 +80,7 @@ const StepWrapper = ({ children, title, onBack, stepKey }: { children: React.Rea
 
 // --- Main Component ---
 export default function App() {
-  const [step, setStep] = useState<Step>('login');
+  const [step, setStep] = useState<Step>('profile');
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState('');
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -90,7 +88,6 @@ export default function App() {
     title: '主治医师',
     hospitalLevel: '二级医院'
   });
-  const [apiKey, setApiKey] = useState<string>(localStorage.getItem('aihubmixApiKey') || '');
   const [topics, setTopics] = useState<TopicSuggestion[]>([]);
   const [selectedTopic, setSelectedTopic] = useState<string>('');
   const [formData, setFormData] = useState({
@@ -110,34 +107,7 @@ export default function App() {
     { id: '2', title: '高血压病例回顾摘要', date: '2026-03-17', status: 'abstract' }
   ]);
 
-  useEffect(() => {
-    geminiService.setApiKey(apiKey);
-    // 当 apiKey 改变时，更新 localStorage
-    if (apiKey) {
-      localStorage.setItem('aihubmixApiKey', apiKey);
-    } else {
-      localStorage.removeItem('aihubmixApiKey');
-    }
-  }, [apiKey]);
-
   // --- Handlers ---
-  const handleLogin = () => {
-    if (!apiKey) {
-      alert('请先填写 AiHubMix API Key！');
-      return;
-    }
-    setLoading(true);
-    setLoadingMsg('正在验证身份...');
-    setTimeout(() => {
-      setLoading(false);
-      setStep('profile');
-    }, 1500);
-  };
-
-  const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setApiKey(e.target.value);
-  };
-
   const handleSaveProfile = () => {
     setStep('dashboard');
   };
@@ -146,6 +116,11 @@ export default function App() {
     setLoading(true);
     setLoadingMsg('AI 正在根据您的背景匹配最佳选题...');
     const suggestions = await geminiService.suggestTopics(userProfile);
+    if (suggestions.length === 0) {
+      setLoading(false);
+      alert('暂未获取到选题，请检查服务端 AIHUBMIX_API_KEY 是否已配置。');
+      return;
+    }
     setTopics(suggestions);
     setLoading(false);
     setStep('topic-selection');
@@ -183,6 +158,7 @@ export default function App() {
     setStep('plagiarism-check');
   };
 
+
   const downloadFile = (content: string, filename: string) => {
     const element = document.createElement("a");
     const file = new Blob([content], {type: 'text/plain'});
@@ -198,70 +174,6 @@ export default function App() {
   return (
     <div className="min-h-screen medical-grid">
       <AnimatePresence mode="wait">
-        {step === 'login' && (
-          <motion.div 
-            key="login"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="h-screen flex items-center justify-center p-6"
-          >
-            <div className="glass-panel p-10 rounded-3xl w-full max-w-md space-y-8 relative overflow-hidden">
-              <div className="scan-line absolute inset-x-0 top-0 opacity-20" />
-              <div className="text-center space-y-2">
-                <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
-                  <Stethoscope className="text-emerald-500 w-8 h-8" />
-                </div>
-                <h1 className="text-3xl font-bold glow-text">医研通</h1>
-                <p className="text-slate-400">临床医生职称科研助手</p>
-              
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-widest text-slate-500 font-mono">AiHubMix API Key</label>
-                <input 
-                  type="password" 
-                  placeholder="请输入您的 AiHubMix API Key" 
-                  value={apiKey}
-                  onChange={handleApiKeyChange}
-                  className="w-full bg-slate-800/50 border border-white/5 rounded-xl p-4 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                />
-              </div>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-widest text-slate-500 font-mono">手机号</label>
-                  <input 
-                    type="text" 
-                    placeholder="请输入手机号" 
-                    className="w-full bg-slate-800/50 border border-white/5 rounded-xl p-4 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs uppercase tracking-widest text-slate-500 font-mono">验证码</label>
-                  <div className="flex space-x-2">
-                    <input 
-                      type="text" 
-                      placeholder="验证码" 
-                      className="flex-1 bg-slate-800/50 border border-white/5 rounded-xl p-4 focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                    />
-                    <button className="bg-slate-800 px-4 rounded-xl text-sm hover:bg-slate-700 transition-colors">获取</button>
-                  </div>
-                </div>
-                <button 
-                  onClick={handleLogin}
-                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center justify-center group"
-                >
-                  立即登录 / 保存 API Key
-                  <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </div>
-              
-              <p className="text-center text-xs text-slate-600">
-                登录即代表同意《用户协议》与《隐私政策》
-              </p>
-            </div>
-          </motion.div>
-        )}
-
         {step === 'profile' && (
           <StepWrapper stepKey="profile" title="完善基础资料">
             <p className="text-slate-400">这些信息将帮助 AI 为您推荐最适合职称晋升的选题。</p>
@@ -335,22 +247,6 @@ export default function App() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { icon: Sparkles, label: '智能选题', color: 'text-blue-400', bg: 'bg-blue-400/10' },
-                  { icon: Zap, label: '快速写作', color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
-                  { icon: ShieldCheck, label: '查重降重', color: 'text-purple-400', bg: 'bg-purple-400/10' },
-                  { icon: BookOpen, label: '政策速查', color: 'text-orange-400', bg: 'bg-orange-400/10' },
-                ].map((item, i) => (
-                  <button key={i} className="glass-panel p-6 rounded-2xl flex flex-col items-center space-y-3 hover:bg-slate-800/80 transition-all group">
-                    <div className={`${item.bg} p-3 rounded-xl group-hover:scale-110 transition-transform`}>
-                      <item.icon className={`${item.color} w-6 h-6`} />
-                    </div>
-                    <span className="text-sm font-medium">{item.label}</span>
-                  </button>
-                ))}
-              </div>
-
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-bold flex items-center">
@@ -409,7 +305,10 @@ export default function App() {
                   </button>
                 </motion.div>
               ))}
-              <button className="w-full py-4 border border-dashed border-white/10 rounded-2xl text-slate-500 hover:text-emerald-400 hover:border-emerald-500/50 transition-all flex items-center justify-center">
+              <button
+                onClick={startNewResearch}
+                className="w-full py-4 border border-dashed border-white/10 rounded-2xl text-slate-500 hover:text-emerald-400 hover:border-emerald-500/50 transition-all flex items-center justify-center"
+              >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 换一批选题
               </button>
@@ -602,7 +501,7 @@ export default function App() {
       </AnimatePresence>
       
       {/* Bottom Navigation for Mobile Feel */}
-      {step !== 'login' && (
+      {step !== 'profile' && (
         <nav className="fixed bottom-0 inset-x-0 bg-slate-900/80 backdrop-blur-xl border-t border-white/5 p-4 flex justify-around items-center md:hidden z-50">
           <button onClick={() => setStep('dashboard')} className={`flex flex-col items-center space-y-1 ${step === 'dashboard' ? 'text-emerald-400' : 'text-slate-500'}`}>
             <Sparkles className="w-5 h-5" />
